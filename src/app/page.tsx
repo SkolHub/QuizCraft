@@ -1,113 +1,312 @@
-import Image from "next/image";
+'use client';
+
+import { Button, Select, SelectItem } from '@nextui-org/react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { useState } from 'react';
+import { ScrollShadow } from '@nextui-org/scroll-shadow';
+import { cn } from '@nextui-org/theme';
+import { Input } from '@nextui-org/input';
+
+const difficulties = [
+  {
+    title: 'Easy',
+    color: 'text-green-200'
+  },
+  {
+    title: 'Medium',
+    color: 'text-yellow-200'
+  },
+  {
+    title: 'Hard',
+    color: 'text-red-200'
+  }
+];
+
+const questionTypes = [
+  { name: 'True or False' },
+  { name: 'Multiple choice' },
+  { name: 'Single choice' },
+  { name: 'Short answer' },
+  { name: 'Long answer' }
+];
+
+type Inputs = {
+  type: 'True or False' | 'Multiple choice' | 'Short answer' | 'Long answer';
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  count: number;
+};
+
+const previous = [
+  {
+    files: ['unu', 'doi', 'trei'],
+    timestamp: new Date()
+  },
+  {
+    files: ['unu', 'doi', 'trei'],
+    timestamp: new Date()
+  },
+  {
+    files: ['unu', 'doi', 'trei'],
+    timestamp: new Date()
+  },
+  {
+    files: ['unu', 'doi', 'trei'],
+    timestamp: new Date()
+  },
+  {
+    files: ['unu', 'doi', 'trei'],
+    timestamp: new Date()
+  }
+];
 
 export default function Home() {
+  const { register, handleSubmit, control } = useForm({
+    defaultValues: {
+      test: [
+        {
+          type: 'True or False',
+          difficulty: 'Medium',
+          count: 1
+        }
+      ]
+    }
+  });
+
+  const { fields, append, prepend, remove, swap, move, insert, replace } =
+    useFieldArray({
+      control,
+      name: 'test'
+    });
+
+  const [files, setFiles] = useState<File[]>([]);
+
+  const onSubmit = (data: any) => {
+    console.log(data);
+    localStorage.setItem('test', JSON.stringify(data));
+    return false;
+  };
+
+  const handleFileChange = (event: any) => {
+    setFiles((prev) => [...prev, event.target.files[0]]);
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div className='w-screen h-screen bg-neutral-700 flex flex-col items-center'>
+      <ScrollShadow
+        hideScrollBar
+        size={400}
+        className='flex flex-col items-stretch pb-12'
+      >
+        <div className='flex gap-4 self-center pb-11 pt-14'>
+          <i className='fal fa-check-square text-[5rem]' />
+          <h1 className='font-semibold text-[3rem] text-white'>QuizCraft</h1>
         </div>
-      </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className='bg-neutral-500 rounded-3xl p-4 gap-2.5 flex flex-col'
         >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+          <div className='flex flex-col bg-neutral-600 p-4 gap-4 rounded-3xl'>
+            <label className='text-white/70 font-semibold text-xs'>
+              Choose the materials to generate questions from (documents,
+              images, etc.)
+            </label>
+            <div className='flex flex-col gap-2'>
+              <div className='flex flex-col gap-2'>
+                {files.map((file, index) => (
+                  <div
+                    key={index}
+                    className='bg-neutral-500 py-3 px-4 justify-between rounded-2xl flex items-center'
+                  >
+                    <div className='flex items-center gap-1'>
+                      <i className='fa fa-file-lines text-xl text-white' />
+                      <label className='font-semibold text-base text-white'>
+                        {file.name}
+                      </label>
+                    </div>
+                    <i
+                      onClick={() => {
+                        setFiles((prevItems) => {
+                          const updatedItems = [...prevItems];
+                          updatedItems.splice(index, 1);
+                          return updatedItems;
+                        });
+                      }}
+                      className='fa fa-xmark-circle text-neutral-300 text-xl cursor-pointer'
+                    />
+                  </div>
+                ))}
+              </div>
+              <div>
+                <input
+                  onChange={handleFileChange}
+                  type='file'
+                  id='fileInput'
+                  className='hidden'
+                />
+                <Button
+                  className='bg-neutral-500 w-full'
+                  onClick={() => {
+                    document.getElementById('fileInput')!.click();
+                    console.log(document.getElementById('fileInput'));
+                  }}
+                  startContent={<i className='fa fa-plus' />}
+                >
+                  Add a file
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className='flex flex-col gap-2.5'>
+            {fields.map((field, index) => (
+              <div
+                key={field.id}
+                className='flex flex-col gap-4 p-4 bg-neutral-600 rounded-3xl'
+              >
+                <div className='flex items-center justify-between'>
+                  <h1 className='font-semibold text-white text-base'>
+                    Question group {index + 1}
+                  </h1>
+                  {fields.length > 1 && (
+                    <i
+                      onClick={() => {
+                        if (fields.length > 1) {
+                          remove(index);
+                        }
+                      }}
+                      className='fa fa-xmark-circle text-xl cursor-pointer'
+                    />
+                  )}
+                </div>
+                <div className='flex gap-4'>
+                  <Select
+                    {...register(`test.${index}.type`, {
+                      required: true
+                    })}
+                    items={questionTypes}
+                    label='Question type'
+                    className='min-w-40'
+                    classNames={{
+                      trigger: 'bg-neutral-500',
+                      label: 'font-semibold text-xs',
+                      value: 'font-semibold text-base'
+                    }}
+                  >
+                    {(questionType) => (
+                      <SelectItem
+                        classNames={{
+                          title: 'font-semibold text-base'
+                        }}
+                        className='font-semibold text-base text-white'
+                        key={questionType.name}
+                      >
+                        {questionType.name}
+                      </SelectItem>
+                    )}
+                  </Select>
+                  <Select
+                    {...register(`test.${index}.difficulty`, {
+                      required: true
+                    })}
+                    items={difficulties}
+                    label='Difficulty level'
+                    className='min-w-40'
+                    classNames={{
+                      trigger: 'bg-neutral-500',
+                      label: 'font-semibold text-xs'
+                    }}
+                    renderValue={(difficulties) =>
+                      difficulties.map((difficulty) => (
+                        <label
+                          key={difficulty.data!.color}
+                          className={cn(
+                            '!font-semibold text-base',
+                            difficulty.data!.color
+                          )}
+                        >
+                          {difficulty.data!.title}
+                        </label>
+                      ))
+                    }
+                  >
+                    {(difficulty) => (
+                      <SelectItem
+                        key={difficulty.title}
+                        className={cn(
+                          'font-semibold text-base',
+                          difficulty.color
+                        )}
+                        classNames={{
+                          title: 'font-semibold text-base'
+                        }}
+                      >
+                        {difficulty.title}
+                      </SelectItem>
+                    )}
+                  </Select>
+                  <Input
+                    {...register(`test.${index}.count`, {
+                      required: true
+                    })}
+                    type='number'
+                    label='Count'
+                    classNames={{
+                      inputWrapper: 'h-full bg-neutral-500'
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <Button
+            className='w-full bg-neutral-600 text-white text-base font-semibold'
+            startContent={<i className='fa fa-plus' />}
+            onClick={() => {
+              append({
+                difficulty: 'Medium',
+                type: 'Multiple choice',
+                count: 1
+              });
+            }}
+          >
+            Add a new question group
+          </Button>
+          <Button
+            type='submit'
+            className='w-full bg-white text-black text-base font-semibold'
+            endContent={<i className='fa fa-paper-plane-alt text-xl' />}
+          >
+            Generate
+          </Button>
+        </form>
+        <label className='text-neutral-300 font-semibold text-base pt-11 pb-7 self-center'>
+          Or check out previous quizzes
+        </label>
+        <div className='flex flex-col gap-3'>
+          {previous.map((quiz, index) => (
+            <Button
+              key={index}
+              className='!bg-neutral-600 !rounded-[1.2rem] !p-4 !justify-between !flex !h-auto'
+            >
+              <div className='flex gap-2'>
+                <i className='fa fa-file-lines text-xl text-white' />
+                <label>
+                  {quiz.files.slice(0, 2).join(', ')}
+                  {quiz.files.length > 2
+                    ? ` & ${quiz.files.length - 2} more`
+                    : ''}
+                </label>
+              </div>
+              <div className='flex items-center text-neutral-300 font-semibold text-[0.875rem] gap-2'>
+                <label>
+                  {('0' + quiz.timestamp.getHours()).slice(-2)}:
+                  {('0' + quiz.timestamp.getMinutes()).slice(-2)}
+                </label>
+                <i className='fa fa-arrow-right text-xl text-white' />
+              </div>
+            </Button>
+          ))}
+        </div>
+      </ScrollShadow>
+    </div>
   );
 }
