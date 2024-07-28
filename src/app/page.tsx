@@ -2,10 +2,12 @@
 
 import { Button, Select, SelectItem } from '@nextui-org/react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollShadow } from '@nextui-org/scroll-shadow';
 import { cn } from '@nextui-org/theme';
 import { Input } from '@nextui-org/input';
+import api from '@/lib/api';
+import Link from 'next/link';
 
 const difficulties = [
   {
@@ -30,35 +32,6 @@ const questionTypes = [
   { name: 'Long answer' }
 ];
 
-type Inputs = {
-  type: 'True or False' | 'Multiple choice' | 'Short answer' | 'Long answer';
-  difficulty: 'Easy' | 'Medium' | 'Hard';
-  count: number;
-};
-
-const previous = [
-  {
-    files: ['unu', 'doi', 'trei'],
-    timestamp: new Date()
-  },
-  {
-    files: ['unu', 'doi', 'trei'],
-    timestamp: new Date()
-  },
-  {
-    files: ['unu', 'doi', 'trei'],
-    timestamp: new Date()
-  },
-  {
-    files: ['unu', 'doi', 'trei'],
-    timestamp: new Date()
-  },
-  {
-    files: ['unu', 'doi', 'trei'],
-    timestamp: new Date()
-  }
-];
-
 export default function Home() {
   const { register, handleSubmit, control } = useForm({
     defaultValues: {
@@ -72,23 +45,58 @@ export default function Home() {
     }
   });
 
-  const { fields, append, prepend, remove, swap, move, insert, replace } =
-    useFieldArray({
-      control,
-      name: 'test'
-    });
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'test'
+  });
 
   const [files, setFiles] = useState<File[]>([]);
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-    localStorage.setItem('test', JSON.stringify(data));
-    return false;
+  const onSubmit = async (data: any) => {
+    console.log(data, files);
+
+    const formData = new FormData();
+
+    formData.append('groups', JSON.stringify(data.test));
+
+    for (const file of files) {
+      formData.append('files', file);
+    }
+
+    await api.post('/quiz-craft/', formData);
   };
 
   const handleFileChange = (event: any) => {
     setFiles((prev) => [...prev, event.target.files[0]]);
   };
+
+  const [quizzes, setQuizzes] = useState<
+    {
+      files: string[];
+      timestamp: Date;
+      id: number;
+    }[]
+  >([]);
+
+  useEffect(() => {
+    async function fetchQuizzes() {
+      const response = await api.get('/quiz-craft/');
+
+      console.log(response.data);
+
+      setQuizzes(
+        response.data.map((quiz: any) => ({
+          files: JSON.parse(quiz.files).map(
+            (file: any) => file.path.match(/[^-]*-[^-]*-(.*)/)[1]
+          ),
+          timestamp: new Date(quiz.timestamp),
+          id: quiz.id
+        }))
+      );
+    }
+
+    void fetchQuizzes();
+  }, []);
 
   return (
     <div className='w-screen h-screen bg-neutral-700 flex flex-col items-center'>
@@ -282,9 +290,11 @@ export default function Home() {
           Or check out previous quizzes
         </label>
         <div className='flex flex-col gap-3'>
-          {previous.map((quiz, index) => (
+          {quizzes.map((quiz) => (
             <Button
-              key={index}
+              key={quiz.id}
+              as={Link}
+              href={`/quiz/${quiz.id}`}
               className='!bg-neutral-600 !rounded-[1.2rem] !p-4 !justify-between !flex !h-auto'
             >
               <div className='flex gap-2'>
