@@ -2,6 +2,7 @@ import { TrueOrFalseModel } from '@/lib/types';
 import { Controller } from 'react-hook-form';
 import { Radio, RadioGroup } from '@nextui-org/radio';
 import { cn } from '@nextui-org/theme';
+import { useState } from 'react';
 
 export default function TrueOrFalse({
   question,
@@ -16,9 +17,11 @@ export default function TrueOrFalse({
   groupIndex: number;
   displayResult: boolean;
 }) {
+  const [ans, setAns] = useState<boolean | undefined>();
+
   return (
-    <div className='bg-neutral-500 gap-4 p-4 rounded-3xl flex flex-col'>
-      <h1 className='font-semibold text-base text-white'>{question}</h1>
+    <div className='bg-white/70 gap-4 p-4 rounded-3xl flex flex-col'>
+      <h1 className='font-semibold text-base text-primary-700'>{question}</h1>
       <Controller
         name={`${groupIndex}.${index}`}
         control={control}
@@ -29,6 +32,8 @@ export default function TrueOrFalse({
               onChange(
                 value === '0' ? false : value === '1' ? true : undefined
               );
+
+              setAns(value === '0' ? false : value === '1' ? true : undefined);
             }}
             className='!gap-2.5'
           >
@@ -38,15 +43,15 @@ export default function TrueOrFalse({
                 value={String(index)}
                 classNames={{
                   base: cn(
-                    'inline-flex w-full m-0 bg-neutral-600',
+                    'inline-flex w-full m-0 bg-white',
                     'items-center justify-start',
                     'cursor-pointer rounded-lg gap-2 p-4  text-white  border-white'
                   ),
-                  label: 'w-full',
-                  wrapper: '!text-white !border-white',
-                  control: '!bg-white'
+                  label: 'w-full !text-primary-600 text-base font-semibold',
+                  wrapper: '!text-white !border-primary-900',
+                  control: '!bg-primary-900'
                 }}
-                className='bg-neutral-600 px-4 py-3 !w-full !max-w-full rounded-2xl'
+                className='bg-white px-4 py-3 !w-full !max-w-full rounded-2xl'
               >
                 {choice}
               </Radio>
@@ -54,7 +59,11 @@ export default function TrueOrFalse({
           </RadioGroup>
         )}
       />
-      {displayResult && <label></label>}
+      {displayResult && (
+        <label className={ans !== answer ? 'text-green-500' : 'text-red-500'}>
+          Answer: {answer ? 'True' : 'False'}
+        </label>
+      )}
     </div>
   );
 }

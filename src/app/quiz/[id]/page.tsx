@@ -13,9 +13,9 @@ import ShortAnswer from '@/components/short-answer';
 import LongAnswer from '@/components/long-answer';
 
 const colors = {
-  Easy: 'text-green-200',
-  Medium: 'text-yellow-200',
-  Hard: 'text-red-200'
+  Easy: 'text-green-500',
+  Medium: 'text-yellow-500',
+  Hard: 'text-red-500'
 };
 
 export default function Page({ params: { id } }: { params: { id: string } }) {
@@ -25,12 +25,23 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
 
   const [displayResult, setDisplayResult] = useState<boolean>(false);
 
+  const [feedback, setFeedback] = useState<string>('');
+
   const onSubmit = async (data: any) => {
     setDisplayResult(true);
 
-    console.log(data);
+    const response = await api.post(
+      `/quiz-craft/feedback/${id}`,
+      groups
+        .map((group) => group.questions)
+        .flat()
+        .map((question, index) => ({
+          question: question.question,
+          answer: data[index]
+        }))
+    );
 
-    // const result = await api.post(`/quiz-craft/verify/${id}`)
+    setFeedback(response.data.feedback);
   };
 
   useEffect(() => {
@@ -46,7 +57,7 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
   }, []);
 
   return (
-    <div className='w-screen h-screen bg-neutral-700 flex flex-col items-center overflow-auto'>
+    <div className='w-screen h-screen bg-secondary-200 flex flex-col items-center overflow-auto px-4'>
       <div className='max-w-full w-[37rem] flex flex-col py-20 gap-12'>
         <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-8'>
           <div className='flex flex-col gap-8'>
@@ -67,6 +78,7 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
           >
             Submit answers
           </Button>
+          <p>{displayResult ? feedback : ''}</p>
         </form>
       </div>
     </div>
@@ -105,27 +117,31 @@ function QuestionGroup({
     const Component = questionComponents[type];
 
     return (
-      <Component
-        displayResult={displayResult}
-        register={register}
-        index={index}
-        groupIndex={groupIndex}
-        key={index}
-        control={control}
-        {...question}
-      />
+      <>
+        <Component
+          displayResult={displayResult}
+          register={register}
+          index={index}
+          groupIndex={groupIndex}
+          key={index}
+          control={control}
+          {...question}
+        />
+      </>
     );
   }
 
   return (
-    <div className='flex flex-col gap-8'>
+    <div className='flex flex-col gap-4 sm:gap-8'>
       <div className='flex items-center gap-1.5'>
-        <h1 className='font-semibold text-xl text-white'>
+        <h1 className='font-semibold text-xl text-primary-900'>
           Group {groupIndex + 1}
         </h1>
-        <i className='fa fa-circle-small text-xs' />
-        <label className='font-semibold text-base text-white'>{type}</label>
-        <i className='fa fa-circle-small text-xs' />
+        <i className='fa fa-circle-small text-primary-800 text-xs' />
+        <label className='font-semibold text-base text-primary-800'>
+          {type}
+        </label>
+        <i className='fa fa-circle-small text-primary-800 text-xs' />
         <label className={cn('font-semibold text-base', colors[difficulty])}>
           {difficulty}
         </label>

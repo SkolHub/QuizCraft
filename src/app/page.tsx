@@ -12,15 +12,15 @@ import Link from 'next/link';
 const difficulties = [
   {
     title: 'Easy',
-    color: 'text-green-200'
+    color: 'text-green-500'
   },
   {
     title: 'Medium',
-    color: 'text-yellow-200'
+    color: 'text-yellow-500'
   },
   {
     title: 'Hard',
-    color: 'text-red-200'
+    color: 'text-red-500'
   }
 ];
 
@@ -99,22 +99,24 @@ export default function Home() {
   }, []);
 
   return (
-    <div className='w-screen h-screen bg-neutral-700 flex flex-col items-center'>
+    <div className='w-screen h-screen bg-secondary-200 flex flex-col items-center px-4'>
       <ScrollShadow
         hideScrollBar
         size={400}
         className='flex flex-col items-stretch pb-12'
       >
         <div className='flex gap-4 self-center pb-11 pt-14'>
-          <i className='fal fa-check-square text-[5rem]' />
-          <h1 className='font-semibold text-[3rem] text-white'>QuizCraft</h1>
+          <i className='fa-solid fa-check-square text-[5rem] text-secondary-600' />
+          <h1 className='font-semibold text-[3rem] text-secondary-600'>
+            QuizCraft
+          </h1>
         </div>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className='bg-neutral-500 rounded-3xl p-4 gap-2.5 flex flex-col'
+          className='bg-white/40 rounded-3xl p-4 gap-2.5 flex flex-col'
         >
-          <div className='flex flex-col bg-neutral-600 p-4 gap-4 rounded-3xl'>
-            <label className='text-white/70 font-semibold text-xs'>
+          <div className='flex flex-col bg-white/50 p-4 gap-4 rounded-3xl'>
+            <label className='text-primary-700 font-semibold text-xs'>
               Choose the materials to generate questions from (documents,
               images, etc.)
             </label>
@@ -123,11 +125,11 @@ export default function Home() {
                 {files.map((file, index) => (
                   <div
                     key={index}
-                    className='bg-neutral-500 py-3 px-4 justify-between rounded-2xl flex items-center'
+                    className='bg-white py-3 px-4 justify-between rounded-2xl flex items-center'
                   >
                     <div className='flex items-center gap-1'>
-                      <i className='fa fa-file-lines text-xl text-white' />
-                      <label className='font-semibold text-base text-white'>
+                      <i className='fa fa-file-lines text-xl text-primary-600' />
+                      <label className='font-semibold text-base text-primary-600'>
                         {file.name}
                       </label>
                     </div>
@@ -139,7 +141,7 @@ export default function Home() {
                           return updatedItems;
                         });
                       }}
-                      className='fa fa-xmark-circle text-neutral-300 text-xl cursor-pointer'
+                      className='fa fa-xmark-circle text-primary-300 text-xl cursor-pointer'
                     />
                   </div>
                 ))}
@@ -152,7 +154,7 @@ export default function Home() {
                   className='hidden'
                 />
                 <Button
-                  className='bg-neutral-500 w-full'
+                  className='bg-white w-full text-primary-600 font-semibold text-base'
                   onClick={() => {
                     document.getElementById('fileInput')!.click();
                     console.log(document.getElementById('fileInput'));
@@ -168,10 +170,10 @@ export default function Home() {
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                className='flex flex-col gap-4 p-4 bg-neutral-600 rounded-3xl'
+                className='flex flex-col gap-4 p-4 bg-white/50 rounded-3xl'
               >
                 <div className='flex items-center justify-between'>
-                  <h1 className='font-semibold text-white text-base'>
+                  <h1 className='font-semibold text-primary-700 text-base'>
                     Question group {index + 1}
                   </h1>
                   {fields.length > 1 && (
@@ -185,7 +187,7 @@ export default function Home() {
                     />
                   )}
                 </div>
-                <div className='flex gap-4'>
+                <div className='flex gap-4 flex-col sm:flex-row'>
                   <Select
                     {...register(`test.${index}.type`, {
                       required: true
@@ -194,9 +196,9 @@ export default function Home() {
                     label='Question type'
                     className='min-w-40'
                     classNames={{
-                      trigger: 'bg-neutral-500',
-                      label: 'font-semibold text-xs',
-                      value: 'font-semibold text-base'
+                      trigger: 'bg-white',
+                      label: 'font-semibold text-xs !text-primary-500',
+                      value: 'font-semibold text-base !text-primary-700'
                     }}
                   >
                     {(questionType) => (
@@ -219,8 +221,8 @@ export default function Home() {
                     label='Difficulty level'
                     className='min-w-40'
                     classNames={{
-                      trigger: 'bg-neutral-500',
-                      label: 'font-semibold text-xs'
+                      trigger: 'bg-white',
+                      label: 'font-semibold text-xs !text-primary-500'
                     }}
                     renderValue={(difficulties) =>
                       difficulties.map((difficulty) => (
@@ -255,10 +257,15 @@ export default function Home() {
                     {...register(`test.${index}.count`, {
                       required: true
                     })}
+                    min={1}
+                    max={8}
                     type='number'
                     label='Count'
                     classNames={{
-                      inputWrapper: 'h-full bg-neutral-500'
+                      inputWrapper: 'bg-white w-full sm:w-16',
+                      base: 'w-full sm:w-16',
+                      label: 'font-semibold text-xs !text-primary-500',
+                      input: 'font-semibold text-base !text-primary-700'
                     }}
                   />
                 </div>
@@ -266,7 +273,7 @@ export default function Home() {
             ))}
           </div>
           <Button
-            className='w-full bg-neutral-600 text-white text-base font-semibold'
+            className='w-full bg-white/50 text-primary-700 text-base font-semibold'
             startContent={<i className='fa fa-plus' />}
             onClick={() => {
               append({
@@ -280,13 +287,13 @@ export default function Home() {
           </Button>
           <Button
             type='submit'
-            className='w-full bg-white text-black text-base font-semibold'
+            className='w-full bg-secondary-500 text-white text-base font-semibold'
             endContent={<i className='fa fa-paper-plane-alt text-xl' />}
           >
             Generate
           </Button>
         </form>
-        <label className='text-neutral-300 font-semibold text-base pt-11 pb-7 self-center'>
+        <label className='text-primary-700 font-semibold text-base pt-11 pb-7 self-center'>
           Or check out previous quizzes
         </label>
         <div className='flex flex-col gap-3'>
@@ -295,23 +302,23 @@ export default function Home() {
               key={quiz.id}
               as={Link}
               href={`/quiz/${quiz.id}`}
-              className='!bg-neutral-600 !rounded-[1.2rem] !p-4 !justify-between !flex !h-auto'
+              className='!bg-white/70 !rounded-[1.2rem] !p-4 !justify-between !flex !h-auto'
             >
               <div className='flex gap-2'>
-                <i className='fa fa-file-lines text-xl text-white' />
-                <label>
+                <i className='fa fa-file-lines text-xl text-primary-700' />
+                <label className='font-semibold text-base text-primary-700 text-ellipsis overflow-hidden whitespace-nowrap max-w-[50%] sm:max-w-none'>
                   {quiz.files.slice(0, 2).join(', ')}
                   {quiz.files.length > 2
                     ? ` & ${quiz.files.length - 2} more`
                     : ''}
                 </label>
               </div>
-              <div className='flex items-center text-neutral-300 font-semibold text-[0.875rem] gap-2'>
+              <div className='flex items-center text-primary-400 font-semibold text-[0.875rem] gap-2'>
                 <label>
                   {('0' + quiz.timestamp.getHours()).slice(-2)}:
                   {('0' + quiz.timestamp.getMinutes()).slice(-2)}
                 </label>
-                <i className='fa fa-arrow-right text-xl text-white' />
+                <i className='fa fa-arrow-right text-xl text-primary-700' />
               </div>
             </Button>
           ))}
